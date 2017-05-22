@@ -137,6 +137,8 @@ def run_training():
     init_op = tf.group(tf.global_variables_initializer(),
                        tf.local_variables_initializer())
 
+    saver = tf.train.Saver()
+
     # Create a session for running operations in the Graph.
     sess = tf.Session()
 
@@ -176,8 +178,7 @@ def run_training():
 
     # Wait for threads to finish.
     coord.join(threads)
-    saver = tf.train.Saver()
-    saver.save(sess, FLAGS.checkpoint_dir)
+    #saver.save(sess, FLAGS.checkpoint_dir)
     sess.close()
 
 
