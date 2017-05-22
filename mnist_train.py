@@ -73,7 +73,7 @@ def read_and_decode(filename_queue):
   return image, label
 
 
-def inputs():
+def inputs(num_epochs):
   """Reads input data num_epochs times.
   Args:
     train: Selects between the training (True) and validation (False) data.
