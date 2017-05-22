@@ -58,6 +58,7 @@ def read_and_decode(filename_queue):
   # [mnist.IMAGE_PIXELS].
   image = tf.decode_raw(features['image_raw'], tf.uint8)
   image.set_shape([mnist.IMAGE_PIXELS])
+  print(image)
 
   # OPTIONAL: Could reshape into a 28x28 image and apply distortions
   # here.  Since we are not applying any distortions in this
@@ -69,6 +70,7 @@ def read_and_decode(filename_queue):
 
   # Convert label from a scalar uint8 tensor to an int32 scalar.
   label = tf.cast(features['label'], tf.int32)
+  print(label)
 
   return image, label
 
