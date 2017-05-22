@@ -76,7 +76,7 @@ def main(_):
                "scores": tensor_info_y},
       method_name=signature_constants.PREDICT_METHOD_NAME)
 
-    legacy_init_op = tf.group(tf.initialize_all_tables(), name='legacy_init_op')
+    legacy_init_op = tf.group(tf.tables_initializer(), name='legacy_init_op')
 
     builder.add_meta_graph_and_variables(
       new_sess, [tag_constants.SERVING],
