@@ -155,8 +155,8 @@ def run_training():
       while not coord.should_stop():
         start_time = time.time()
 
-        images, labels = feed_inputs_data(image=image, label=label,train=True, batch_size=FLAGS.batch_size,
-                            num_epochs=FLAGS.num_epochs)
+        images, labels = sess.run(feed_inputs_data(image=image, label=label,train=True, batch_size=FLAGS.batch_size,
+                            num_epochs=FLAGS.num_epochs))
         sess.run(train_step, feed_dict={x: images, y_: labels})      
 
         duration = time.time() - start_time
