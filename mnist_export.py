@@ -49,8 +49,6 @@ def main(_):
     print(new_x)
     new_y = new_graph.get_tensor_by_name('input/Cast_1:0')
     print(new_y)
-    new_serialized_tf_example = new_graph.get_tensor_by_name('tf_example:0')
-    print(new_serialized_tf_example)
     new_prediction_classes = tf.get_collection('prediction_classes')[0]
     print(new_prediction_classes)
     var = new_graph.get_tensor_by_name("Variable:0")
