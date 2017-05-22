@@ -52,7 +52,7 @@ def main(_):
     new_labels = tf.identity(labels)
     logits = new_graph.get_tensor_by_name('softmax_linear/add:0') 
     print(logits)
-    correct = tf.nn.in_top_k(logits, labels, 1)
+    new_labels = tf.identity(logits)
 
   # Export model
   # WARNING(break-tutorial-inline-code): The following code snippet is
@@ -72,7 +72,7 @@ def main(_):
     models = signature_def_utils.build_signature_def(
       inputs={"keys": tensor_info_x},
       outputs={"keys": new_labels,
-               "scores": correct},
+               "scores": logits},
       method_name=signature_constants.PREDICT_METHOD_NAME)
 
     legacy_init_op = tf.group(tf.initialize_all_tables(), name='legacy_init_op')
