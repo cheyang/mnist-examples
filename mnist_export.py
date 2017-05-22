@@ -45,8 +45,8 @@ def main(_):
     new_saver = tf.train.import_meta_graph(meta_graph_file) #'/test/mnistoutput/ckpt.meta')
     new_saver.restore(new_sess, ckpt_path) #'/test/mnistoutput/ckpt')
     new_graph = tf.get_default_graph()
-    new_x = new_graph.get_tensor_by_name('input/DecodeRaw:0') # images
-    print(new_x)
+    images = new_graph.get_tensor_by_name('input/DecodeRaw:0') # images
+    print(images)
     # labels = new_graph.get_tensor_by_name('input/Cast_1:0') # labels
     # print(labels)
     # new_labels = tf.identity(labels)
@@ -66,8 +66,8 @@ def main(_):
     builder = saved_model_builder.SavedModelBuilder(export_path)
 
   # Build the signature_def_map.
-    tensor_info_x = utils.build_tensor_info(new_x)
-    tensor_info_y = utils.build_tensor_info(labels)
+    tensor_info_x = utils.build_tensor_info(images)
+    tensor_info_y = utils.build_tensor_info(logits)
 
     models = signature_def_utils.build_signature_def(
       inputs={"keys": tensor_info_x},
