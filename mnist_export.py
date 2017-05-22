@@ -49,10 +49,10 @@ def main(_):
     print(images)
     # labels = new_graph.get_tensor_by_name('input/Cast_1:0') # labels
     # print(labels)
-    # new_labels = tf.identity(labels)
+    # labels = tf.identity(labels)
     logits = new_graph.get_tensor_by_name('softmax_linear/add:0') 
     print(logits)
-    new_labels = tf.identity(logits)
+    labels = tf.identity(logits)
 
   # Export model
   # WARNING(break-tutorial-inline-code): The following code snippet is
@@ -68,10 +68,11 @@ def main(_):
   # Build the signature_def_map.
     tensor_info_x = utils.build_tensor_info(images)
     tensor_info_y = utils.build_tensor_info(logits)
+    tensor_info_label = utils.build_tensor_info(labels)
 
     models = signature_def_utils.build_signature_def(
       inputs={"keys": tensor_info_x},
-      outputs={"labels": new_labels,
+      outputs={"labels": tensor_info_label,
                "scores": tensor_info_y},
       method_name=signature_constants.PREDICT_METHOD_NAME)
 
