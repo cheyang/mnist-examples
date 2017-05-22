@@ -58,7 +58,7 @@ def read_and_decode(filename_queue):
   # [mnist.IMAGE_PIXELS].
   image = tf.decode_raw(features['image_raw'], tf.uint8)
   image.set_shape([mnist.IMAGE_PIXELS])
-  print(image)
+  print("image:",image)
 
   # OPTIONAL: Could reshape into a 28x28 image and apply distortions
   # here.  Since we are not applying any distortions in this
@@ -70,7 +70,7 @@ def read_and_decode(filename_queue):
 
   # Convert label from a scalar uint8 tensor to an int32 scalar.
   label = tf.cast(features['label'], tf.int32)
-  print(label)
+  print("label:",label)
 
   return image, label
 
@@ -129,13 +129,13 @@ def run_training():
                              FLAGS.hidden1,
                              FLAGS.hidden2)
 
-    print(images)
-    print(logits)
+    print("images:",images)
+    print("logits",logits)
 
     # Add to the Graph the loss calculation.
     loss = mnist.loss(logits, labels)
 
-    print(labels)
+    print("labels",labels)
 
     # Add to the Graph operations that train the model.
     train_op = mnist.training(loss, FLAGS.learning_rate)
