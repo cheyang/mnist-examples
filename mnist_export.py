@@ -44,8 +44,6 @@ def main(_):
   #  new_sess.run(tf.initialize_all_variables())
     new_saver = tf.train.import_meta_graph(meta_graph_file) #'/test/mnistoutput/ckpt.meta')
     new_saver.restore(new_sess, ckpt_path) #'/test/mnistoutput/ckpt')
-    new_values = tf.get_collection('values')[0]
-    print(new_values)
     new_graph = tf.get_default_graph()
     new_x = new_graph.get_tensor_by_name('input/DecodeRaw:0')
     print(new_x)
