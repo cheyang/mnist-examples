@@ -14,7 +14,7 @@
 # ==============================================================================
 
 """Train and Eval the MNIST network.
-This version is like fully_connected_feed.py but uses data converted
+This version is like mnist.py but uses data converted
 to a TFRecords file containing tf.train.Example protocol buffers.
 See tensorflow/g3doc/how_tos/reading_data.md#reading-from-files
 for context.
@@ -73,7 +73,7 @@ def read_and_decode(filename_queue):
   return image, label
 
 
-def inputs(train, batch_size, num_epochs):
+def inputs(train, num_epochs):
   """Reads input data num_epochs times.
   Args:
     train: Selects between the training (True) and validation (False) data.
@@ -101,7 +101,10 @@ def inputs(train, batch_size, num_epochs):
     # queue.
     image, label = read_and_decode(filename_queue)
 
-    # Shuffle the examples and collect them into batch_size batches.
+    return image, label
+
+def feed_inputs_data(image, label, train, batch_size, num_epochs):
+	# Shuffle the examples and collect them into batch_size batches.
     # (Internally uses a RandomShuffleQueue.)
     # We run this in two threads to avoid being a bottleneck.
     images, sparse_labels = tf.train.shuffle_batch(
@@ -113,29 +116,28 @@ def inputs(train, batch_size, num_epochs):
     return images, sparse_labels
 
 
+
 def run_training():
   """Train MNIST for a number of steps."""
 
   # Tell TensorFlow that the model will be built into the default Graph.
   with tf.Graph().as_default():
     # Input images and labels.
-    images, labels = inputs(train=True, batch_size=FLAGS.batch_size,
-                            num_epochs=FLAGS.num_epochs)
+    image, label = inputs(train=True, num_epochs=FLAGS.num_epochs)
 
-    # Build a Graph that computes predictions from the inference model.
-    logits = mnist.inference(images,
-                             FLAGS.hidden1,
-                             FLAGS.hidden2)
+    # Build a Graph that computes predictions
+    x = tf.placeholder(dtype=tf.float32, shape=[None, 784], name='x-input')
+    y_ = tf.placeholder(dtype=tf.float32, shape=[None, 10])
+    w = tf.Variable(tf.zeros([784, 10]))
+    b = tf.Variable(tf.zeros([10]))
+    y = tf.nn.softmax(tf.matmul(x, w) + b, name='y')
+    cross_entropy = -tf.reduce_sum(y_ * tf.log(y), name='corss_entropy')
+    train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy, name='train_step')
 
-    # Add to the Graph the loss calculation.
-    loss = mnist.loss(logits, labels)
 
-    # Add to the Graph operations that train the model.
-    train_op = mnist.training(loss, FLAGS.learning_rate)
 
     # The op for initializing the variables.
-    init_op = tf.group(tf.global_variables_initializer(),
-                       tf.local_variables_initializer())
+    init_op = tf.global_variables_initializer()
 
     # Create a session for running operations in the Graph.
     sess = tf.Session()
@@ -153,13 +155,9 @@ def run_training():
       while not coord.should_stop():
         start_time = time.time()
 
-        # Run one step of the model.  The return values are
-        # the activations from the `train_op` (which is
-        # discarded) and the `loss` op.  To inspect the values
-        # of your ops or variables, you may include them in
-        # the list passed to sess.run() and the value tensors
-        # will be returned in the tuple from the call.
-        _, loss_value = sess.run([train_op, loss])
+        images, labels = sess.run(feed_inputs_data(image=image, label=label,train=True, batch_size=FLAGS.batch_size,
+                            num_epochs=FLAGS.num_epochs))
+        sess.run(train_step, feed_dict={x: images, y_: labels})      
 
         duration = time.time() - start_time
 
@@ -198,16 +196,10 @@ if __name__ == '__main__':
       help='Number of epochs to run trainer.'
   )
   parser.add_argument(
-      '--hidden1',
+      '--training_iteration',
       type=int,
-      default=128,
-      help='Number of units in hidden layer 1.'
-  )
-  parser.add_argument(
-      '--hidden2',
-      type=int,
-      default=32,
-      help='Number of units in hidden layer 2.'
+      default=5000,
+      help='Number of iterations.'
   )
   parser.add_argument(
       '--batch_size',
@@ -218,7 +210,7 @@ if __name__ == '__main__':
   parser.add_argument(
       '--train_dir',
       type=str,
-      default='hdfs://192.168.100.206:9000/mnist/data',
+      default='/tmp/data',
       help='Directory with the training data.'
   )
   FLAGS, unparsed = parser.parse_known_args()
