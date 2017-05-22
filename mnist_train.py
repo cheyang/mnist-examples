@@ -122,20 +122,19 @@ def run_training():
     images, labels = inputs(train=True, batch_size=FLAGS.batch_size,
                             num_epochs=FLAGS.num_epochs)
 
-    # Build a Graph that computes predictions from the inference model.
-    logits = mnist.inference(images,
-                             FLAGS.hidden1,
-                             FLAGS.hidden2)
+    # Build a Graph that computes predictions
+    x = tf.placeholder(dtype=tf.float32, shape=[None, 784], name='x-input')
+    y_ = tf.placeholder(dtype=tf.float32, shape=[None, 10])
+    w = tf.Variable(tf.zeros([784, 10]))
+    b = tf.Variable(tf.zeros([10]))
+    y = tf.nn.softmax(tf.matmul(x, w) + b, name='y')
+    cross_entropy = -tf.reduce_sum(y_ * tf.log(y), name='corss_entropy')
+    train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy, name='train_step')
 
-    # Add to the Graph the loss calculation.
-    loss = mnist.loss(logits, labels)
 
-    # Add to the Graph operations that train the model.
-    train_op = mnist.training(loss, FLAGS.learning_rate)
 
     # The op for initializing the variables.
-    init_op = tf.group(tf.global_variables_initializer(),
-                       tf.local_variables_initializer())
+    init_op = tf.global_variables_initializer()
 
     # Create a session for running operations in the Graph.
     sess = tf.Session()
@@ -153,13 +152,7 @@ def run_training():
       while not coord.should_stop():
         start_time = time.time()
 
-        # Run one step of the model.  The return values are
-        # the activations from the `train_op` (which is
-        # discarded) and the `loss` op.  To inspect the values
-        # of your ops or variables, you may include them in
-        # the list passed to sess.run() and the value tensors
-        # will be returned in the tuple from the call.
-        _, loss_value = sess.run([train_op, loss])
+        train_step.run(feed_dict={x: images, y_: labels})      
 
         duration = time.time() - start_time
 
@@ -198,16 +191,10 @@ if __name__ == '__main__':
       help='Number of epochs to run trainer.'
   )
   parser.add_argument(
-      '--hidden1',
+      '--training_iteration',
       type=int,
-      default=128,
-      help='Number of units in hidden layer 1.'
-  )
-  parser.add_argument(
-      '--hidden2',
-      type=int,
-      default=32,
-      help='Number of units in hidden layer 2.'
+      default=5000,
+      help='Number of iterations.'
   )
   parser.add_argument(
       '--batch_size',
