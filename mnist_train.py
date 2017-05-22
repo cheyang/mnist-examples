@@ -123,7 +123,7 @@ def run_training():
   # Tell TensorFlow that the model will be built into the default Graph.
   with tf.Graph().as_default():
     # Input images and labels.
-    image, label = inputs(train=True, FLAGS.num_epochs)
+    image, label = inputs(train=True, num_epochs=FLAGS.num_epochs)
 
     # Build a Graph that computes predictions
     x = tf.placeholder(dtype=tf.float32, shape=[None, 784], name='x-input')
