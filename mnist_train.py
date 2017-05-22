@@ -169,7 +169,7 @@ def run_training():
         if step % 100 == 0:
           print('Step %d: loss = %.2f (%.3f sec)' % (step, loss_value,
                                                      duration))
-          saver.save(sess, FLAGS.checkpoint_dir, global_step=step)
+          saver.save(sess, FLAGS.checkpoint_dir+"/mnist", global_step=step)
         step += 1
     except tf.errors.OutOfRangeError:
       print('Done training for %d epochs, %d steps.' % (FLAGS.num_epochs, step))
@@ -228,7 +228,7 @@ if __name__ == '__main__':
   parser.add_argument(
       '--checkpoint_dir',
       type=str,
-      default='hdfs://192.168.100.206:9000/mnist/ckpt',
+      default='hdfs://192.168.100.206:9000/mnist/checkpoint',
       help='Directory with the checkpoint dir.'
   )
   FLAGS, unparsed = parser.parse_known_args()

@@ -157,6 +157,7 @@ def run_training():
 
         images, labels = sess.run(feed_inputs_data(image=image, label=label,train=True, batch_size=FLAGS.batch_size,
                             num_epochs=FLAGS.num_epochs))
+        print("get images")
         sess.run(train_step, feed_dict={x: images, y_: labels})      
 
         duration = time.time() - start_time
