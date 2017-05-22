@@ -228,7 +228,7 @@ if __name__ == '__main__':
   parser.add_argument(
       '--checkpoint_dir',
       type=str,
-      default='hdfs://192.168.100.206:9000/mnist/checkpoint',
+      default='hdfs://192.168.100.206:9000/mnist/checkpoint/mnist',
       help='Directory with the checkpoint dir.'
   )
   FLAGS, unparsed = parser.parse_known_args()
