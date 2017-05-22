@@ -50,6 +50,7 @@ def main(_):
     new_y = new_graph.get_tensor_by_name('input/Cast_1:0') # labels
     print(new_y)
     new_labels = tf.identity(new_y)
+    logits = new_graph.get_tensor_by_name('softmax_linear/add:0') 
     
 
   # Export model
@@ -70,7 +71,7 @@ def main(_):
     models = signature_def_utils.build_signature_def(
       inputs={"keys": tensor_info_x},
       outputs={"keys": new_labels,
-               "scores": tensor_info_y},
+               "scores": logits},
       method_name=signature_constants.PREDICT_METHOD_NAME)
 
     legacy_init_op = tf.group(tf.initialize_all_tables(), name='legacy_init_op')
