@@ -152,7 +152,7 @@ def run_training():
       while not coord.should_stop():
         start_time = time.time()
 
-        train_step.run(feed_dict={x: images, y_: labels})      
+        sess.run(train_step, feed_dict={x: images, y_: labels})      
 
         duration = time.time() - start_time
 
