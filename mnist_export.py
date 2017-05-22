@@ -47,9 +47,9 @@ def main(_):
     new_graph = tf.get_default_graph()
     new_x = new_graph.get_tensor_by_name('input/DecodeRaw:0') # images
     print(new_x)
-    labels = new_graph.get_tensor_by_name('input/Cast_1:0') # labels
-    print(labels)
-    new_labels = tf.identity(labels)
+    # labels = new_graph.get_tensor_by_name('input/Cast_1:0') # labels
+    # print(labels)
+    # new_labels = tf.identity(labels)
     logits = new_graph.get_tensor_by_name('softmax_linear/add:0') 
     print(logits)
     new_labels = tf.identity(logits)
@@ -71,7 +71,7 @@ def main(_):
 
     models = signature_def_utils.build_signature_def(
       inputs={"keys": tensor_info_x},
-      outputs={"keys": new_labels,
+      outputs={"labels": new_labels,
                "scores": logits},
       method_name=signature_constants.PREDICT_METHOD_NAME)
 
