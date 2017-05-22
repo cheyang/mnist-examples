@@ -169,7 +169,7 @@ def run_training():
         if step % 100 == 0:
           print('Step %d: loss = %.2f (%.3f sec)' % (step, loss_value,
                                                      duration))
-          saver.save(sess, FLAGS.checkpoint_dir+"/mnist", global_step=step)
+          saver.save(sess, FLAGS.checkpoint_dir+"/mnist.ckpt", global_step=step)
         step += 1
     except tf.errors.OutOfRangeError:
       print('Done training for %d epochs, %d steps.' % (FLAGS.num_epochs, step))
