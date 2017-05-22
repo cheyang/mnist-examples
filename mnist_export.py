@@ -45,14 +45,12 @@ def main(_):
     new_saver = tf.train.import_meta_graph(meta_graph_file) #'/test/mnistoutput/ckpt.meta')
     new_saver.restore(new_sess, ckpt_path) #'/test/mnistoutput/ckpt')
     new_graph = tf.get_default_graph()
-    new_x = new_graph.get_tensor_by_name('input/DecodeRaw:0')
+    new_x = new_graph.get_tensor_by_name('input/DecodeRaw:0') # images
     print(new_x)
-    new_y = new_graph.get_tensor_by_name('input/Cast_1:0')
+    new_y = new_graph.get_tensor_by_name('input/Cast_1:0') # labels
     print(new_y)
-    new_prediction_classes = tf.get_collection('prediction_classes')[0]
-    print(new_prediction_classes)
-    var = new_graph.get_tensor_by_name("Variable:0")
-    print(var)
+    new_labels = tf.identity(new_y)
+    
 
   # Export model
   # WARNING(break-tutorial-inline-code): The following code snippet is
@@ -66,25 +64,13 @@ def main(_):
     builder = saved_model_builder.SavedModelBuilder(export_path)
 
   # Build the signature_def_map.
-    classification_inputs = utils.build_tensor_info(new_serialized_tf_example)
-    classification_outputs_classes = utils.build_tensor_info(new_prediction_classes)
-    classification_outputs_scores = utils.build_tensor_info(new_values)
-    classification_signature = signature_def_utils.build_signature_def(
-      inputs={signature_constants.CLASSIFY_INPUTS: classification_inputs},
-      outputs={
-          signature_constants.CLASSIFY_OUTPUT_CLASSES:
-              classification_outputs_classes,
-          signature_constants.CLASSIFY_OUTPUT_SCORES:
-              classification_outputs_scores
-      },
-      method_name=signature_constants.CLASSIFY_METHOD_NAME)
-
     tensor_info_x = utils.build_tensor_info(new_x)
     tensor_info_y = utils.build_tensor_info(new_y)
 
-    prediction_signature = signature_def_utils.build_signature_def(
-      inputs={'images': tensor_info_x},
-      outputs={'scores': tensor_info_y},
+    models = signature_def_utils.build_signature_def(
+      inputs={"keys": tensor_info_x},
+      outputs={"keys": new_labels,
+               "scores": tensor_info_y},
       method_name=signature_constants.PREDICT_METHOD_NAME)
 
     legacy_init_op = tf.group(tf.initialize_all_tables(), name='legacy_init_op')
@@ -92,10 +78,8 @@ def main(_):
     builder.add_meta_graph_and_variables(
       new_sess, [tag_constants.SERVING],
       signature_def_map={
-          'predict_images':
-              prediction_signature,
           signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY:
-              classification_signature,
+              models,
       },
       legacy_init_op=legacy_init_op)
     builder.save()
