@@ -97,16 +97,18 @@ def inputs(train, num_epochs):
     filename_queue = tf.train.string_input_producer(
         [filename], num_epochs=num_epochs)
 
+  return filename_queue
+
+def feed_inputs_data(filename_queue, train, batch_size, num_epochs):
+	# Shuffle the examples and collect them into batch_size batches.
+    # (Internally uses a RandomShuffleQueue.)
+    # We run this in two threads to avoid being a bottleneck.
     # Even when reading in multiple threads, share the filename
     # queue.
     image, label = read_and_decode(filename_queue)
 
     return image, label
 
-def feed_inputs_data(image, label, train, batch_size, num_epochs):
-	# Shuffle the examples and collect them into batch_size batches.
-    # (Internally uses a RandomShuffleQueue.)
-    # We run this in two threads to avoid being a bottleneck.
     images, sparse_labels = tf.train.shuffle_batch(
         [image, label], batch_size=batch_size, num_threads=2,
         capacity=1000 + 3 * batch_size,
@@ -123,7 +125,7 @@ def run_training():
   # Tell TensorFlow that the model will be built into the default Graph.
   with tf.Graph().as_default():
     # Input images and labels.
-    image, label = inputs(train=True, num_epochs=FLAGS.num_epochs)
+    filename_queue = inputs(train=True, num_epochs=FLAGS.num_epochs)
 
     # Build a Graph that computes predictions
     x = tf.placeholder(dtype=tf.float32, shape=[None, 784], name='x-input')
@@ -155,7 +157,7 @@ def run_training():
       while not coord.should_stop():
         start_time = time.time()
 
-        images, labels = sess.run(feed_inputs_data(image=image, label=label,train=True, batch_size=FLAGS.batch_size,
+        images, labels = sess.run(feed_inputs_data(filename_queue=filename_queue,train=True, batch_size=FLAGS.batch_size,
                             num_epochs=FLAGS.num_epochs))
         print("get images")
         sess.run(train_step, feed_dict={x: images, y_: labels})      
