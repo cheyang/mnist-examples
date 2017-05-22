@@ -51,7 +51,7 @@ def main(_):
     print(new_y)
     new_labels = tf.identity(new_y)
     logits = new_graph.get_tensor_by_name('softmax_linear/add:0') 
-    
+    print(logits)
 
   # Export model
   # WARNING(break-tutorial-inline-code): The following code snippet is
