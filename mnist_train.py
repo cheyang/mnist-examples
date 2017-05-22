@@ -73,7 +73,7 @@ def read_and_decode(filename_queue):
   return image, label
 
 
-def inputs(train, batch_size, num_epochs):
+def inputs():
   """Reads input data num_epochs times.
   Args:
     train: Selects between the training (True) and validation (False) data.
@@ -101,7 +101,10 @@ def inputs(train, batch_size, num_epochs):
     # queue.
     image, label = read_and_decode(filename_queue)
 
-    # Shuffle the examples and collect them into batch_size batches.
+    return image, label
+
+def feed_inputs_data(image, label, train, batch_size, num_epochs):
+	# Shuffle the examples and collect them into batch_size batches.
     # (Internally uses a RandomShuffleQueue.)
     # We run this in two threads to avoid being a bottleneck.
     images, sparse_labels = tf.train.shuffle_batch(
@@ -113,14 +116,14 @@ def inputs(train, batch_size, num_epochs):
     return images, sparse_labels
 
 
+
 def run_training():
   """Train MNIST for a number of steps."""
 
   # Tell TensorFlow that the model will be built into the default Graph.
   with tf.Graph().as_default():
     # Input images and labels.
-    images, labels = inputs(train=True, batch_size=FLAGS.batch_size,
-                            num_epochs=FLAGS.num_epochs)
+    image, label = inputs()
 
     # Build a Graph that computes predictions
     x = tf.placeholder(dtype=tf.float32, shape=[None, 784], name='x-input')
@@ -152,6 +155,8 @@ def run_training():
       while not coord.should_stop():
         start_time = time.time()
 
+        images, labels = feed_inputs_data(train=True, batch_size=FLAGS.batch_size,
+                            num_epochs=FLAGS.num_epochs)
         sess.run(train_step, feed_dict={x: images, y_: labels})      
 
         duration = time.time() - start_time
