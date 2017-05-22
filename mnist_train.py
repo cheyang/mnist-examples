@@ -177,7 +177,7 @@ def run_training():
     # Wait for threads to finish.
     coord.join(threads)
     saver = tf.train.Saver()
-    saver.save(sess, checkpoint_dir + "/ckpt")
+    saver.save(sess, FLAGS.checkpoint_dir + "/ckpt")
     sess.close()
 
 
