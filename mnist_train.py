@@ -176,6 +176,8 @@ def run_training():
 
     # Wait for threads to finish.
     coord.join(threads)
+    saver = tf.train.Saver()
+    saver.save(sess, checkpoint_dir + "/ckpt")
     sess.close()
 
 
@@ -220,6 +222,12 @@ if __name__ == '__main__':
       type=str,
       default='hdfs://192.168.100.206:9000/mnist/data',
       help='Directory with the training data.'
+  )
+  parser.add_argument(
+      '--checkpoint_dir',
+      type=str,
+      default='hdfs://192.168.100.206:9000/mnist/',
+      help='Directory with the checkpoint dir.'
   )
   FLAGS, unparsed = parser.parse_known_args()
   tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
