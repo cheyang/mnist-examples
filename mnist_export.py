@@ -71,7 +71,7 @@ def main(_):
 
     models = signature_def_utils.build_signature_def(
       inputs={"keys": tensor_info_x},
-      outputs={"labels": new_labels,
+      outputs={
                "scores": logits},
       method_name=signature_constants.PREDICT_METHOD_NAME)
 
