@@ -47,11 +47,12 @@ def main(_):
     new_graph = tf.get_default_graph()
     new_x = new_graph.get_tensor_by_name('input/DecodeRaw:0') # images
     print(new_x)
-    new_y = new_graph.get_tensor_by_name('input/Cast_1:0') # labels
-    print(new_y)
-    new_labels = tf.identity(new_y)
+    labels = new_graph.get_tensor_by_name('input/Cast_1:0') # labels
+    print(labels)
+    new_labels = tf.identity(labels)
     logits = new_graph.get_tensor_by_name('softmax_linear/add:0') 
     print(logits)
+    correct = tf.nn.in_top_k(logits, labels, 1)
 
   # Export model
   # WARNING(break-tutorial-inline-code): The following code snippet is
@@ -66,12 +67,12 @@ def main(_):
 
   # Build the signature_def_map.
     tensor_info_x = utils.build_tensor_info(new_x)
-    tensor_info_y = utils.build_tensor_info(new_y)
+    tensor_info_y = utils.build_tensor_info(labels)
 
     models = signature_def_utils.build_signature_def(
       inputs={"keys": tensor_info_x},
       outputs={"keys": new_labels,
-               "scores": logits},
+               "scores": correct},
       method_name=signature_constants.PREDICT_METHOD_NAME)
 
     legacy_init_op = tf.group(tf.initialize_all_tables(), name='legacy_init_op')
