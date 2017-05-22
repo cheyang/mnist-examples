@@ -19,7 +19,7 @@ from tensorflow.python.util import compat
 from tensorflow.examples.tutorials.mnist import input_data as mnist_input_data
 
 tf.app.flags.DEFINE_integer('model_version', 1, 'version number of the exported model.')
-tf.app.flags.DEFINE_string('checkpoint_path', None, 'Checkpoints path.')
+tf.app.flags.DEFINE_string('checkpoint_path', "hdfs://192.168.100.206:9000/mnist/checkpoint/mnist/mnist.ckpt-600", 'Checkpoints path.')
 FLAGS = tf.app.flags.FLAGS
 
 
@@ -47,9 +47,9 @@ def main(_):
     new_values = tf.get_collection('values')[0]
     print(new_values)
     new_graph = tf.get_default_graph()
-    new_x = new_graph.get_tensor_by_name('x:0')
+    new_x = new_graph.get_tensor_by_name('input/DecodeRaw:0')
     print(new_x)
-    new_y = new_graph.get_tensor_by_name('y:0')
+    new_y = new_graph.get_tensor_by_name('input/Cast_1:0')
     print(new_y)
     new_serialized_tf_example = new_graph.get_tensor_by_name('tf_example:0')
     print(new_serialized_tf_example)
