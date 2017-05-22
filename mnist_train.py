@@ -129,8 +129,13 @@ def run_training():
                              FLAGS.hidden1,
                              FLAGS.hidden2)
 
+    print(images)
+    print(logits)
+
     # Add to the Graph the loss calculation.
     loss = mnist.loss(logits, labels)
+
+    print(labels)
 
     # Add to the Graph operations that train the model.
     train_op = mnist.training(loss, FLAGS.learning_rate)
